@@ -204,7 +204,6 @@
 		{
 			"environment_vars": [
 				"CLEANUP_PAUSE={{user `cleanup_pause`}}",
-				"DESKTOP={{user `desktop`}}",
 				"MOTD={{user `motd`}}",
 				"REMOVE_DOCS={{user `remove_docs`}}",
 				"UPDATE={{user `update`}}",
@@ -239,7 +238,6 @@
 		"cpus": "1",
 		"configdir": "./configdir",
 		"custom_script": "custom-script.sh",
-		"desktop": "false",
 		"disk_size": "65536",
 		"ftp_proxy": "{{env `ftp_proxy`}}",
 		"headless": "",
