@@ -12,13 +12,17 @@ dpkg --get-selections | grep -v deinstall
 
 # Remove some packages to get a minimal install
 echo "==> Removing all linux kernels except the currrent one"
-dpkg --list | awk '{ print $2 }' | grep -e 'linux-\(headers\|image\)-.*[0-9]\($\|-generic\)' | grep -v "$(uname -r | sed 's/-generic//')" | xargs apt-get -y purge
+dpkg --list | awk '{ print $2 }' | grep 'linux-image-*' | grep -v $(uname -r) | grep -v linux-image-$(uname -r | cut -f "3" -d "-") | xargs apt-get -y purge
 echo "==> Removing linux source"
 dpkg --list | awk '{ print $2 }' | grep linux-source | xargs apt-get -y purge
 echo "==> Removing development packages"
 dpkg --list | awk '{ print $2 }' | grep -- '-dev$' | xargs apt-get -y purge
-echo "==> Removing documentation"
-dpkg --list | awk '{ print $2 }' | grep -- '-doc$' | xargs apt-get -y purge
+
+if [[ "$REMOVE_DOCS" =~ ^(true|yes|on|1|TRUE|YES|ON])$ ]]; then
+	echo "==> Removing documentation"
+	dpkg --list | awk '{ print $2 }' | grep -- '-doc$' | xargs apt-get -y purge
+fi
+
 echo "==> Removing development tools"
 #dpkg --list | grep -i compiler | awk '{ print $2 }' | xargs apt-get -y purge
 #apt-get -y purge cpp gcc g++ 
@@ -46,12 +50,16 @@ while [ -n "$(deborphan --guess-all --libdevel)" ]; do
 done
 apt-get -y purge deborphan dialog
 
-echo "==> Removing man pages"
-rm -rf /usr/share/man/*
 echo "==> Removing APT files"
 find /var/lib/apt -type f | xargs rm -f
-echo "==> Removing any docs"
-rm -rf /usr/share/doc/*
+
+if [[ "$REMOVE_DOCS" =~ ^(true|yes|on|1|TRUE|YES|ON])$ ]]; then
+	echo "==> Removing man pages"
+	rm -rf /usr/share/man/*
+	echo "==> Removing any docs"
+	rm -rf /usr/share/doc/*
+fi
+
 echo "==> Removing caches"
 find /var/cache -type f -exec rm -rf {} \;
 # delete any logs that have built up during the install

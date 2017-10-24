@@ -3,10 +3,12 @@
 SSH_USER=${SSH_USERNAME:-vagrant}
 DISK_USAGE_BEFORE_CLEANUP=$(df -h)
 
-# Make sure udev does not block our network - http://6.ptmc.org/?p=164
+# Make sure Udev doesn't block our network
+# http://6.ptmc.org/?p=164
 echo "==> Cleaning up udev rules"
 rm -rf /dev/.udev/
-rm /lib/udev/rules.d/75-persistent-net-generator.rules
+# Better fix that persists package updates: http://serverfault.com/a/485689
+touch /etc/udev/rules.d/75-persistent-net-generator.rules
 
 echo "==> Cleaning up leftover dhcp leases"
 # Ubuntu 10.04
@@ -49,14 +51,14 @@ echo "==> Clearing last login information"
 # Whiteout root
 count=$(df --sync -kP / | tail -n1  | awk -F ' ' '{print $4}')
 let count--
-dd if=/dev/zero of=/tmp/whitespace bs=1024 count=$count
-rm /tmp/whitespace
+dd if=/dev/zero of=/tmp/whitespace bs=1024 count=$count || echo "dd exit code $? is suppressed"
+rm -f /tmp/whitespace
 
 # Whiteout /boot
 count=$(df --sync -kP /boot | tail -n1 | awk -F ' ' '{print $4}')
 let count--
-dd if=/dev/zero of=/boot/whitespace bs=1024 count=$count
-rm /boot/whitespace
+dd if=/dev/zero of=/boot/whitespace bs=1024 count=$count || echo "dd exit code $? is suppressed"
+rm -f /boot/whitespace
 
 echo '==> Clear out swap and disable until reboot'
 set +e
