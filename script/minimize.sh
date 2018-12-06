@@ -60,10 +60,5 @@ if [[ "$REMOVE_DOCS" =~ ^(true|yes|on|1|TRUE|YES|ON])$ ]]; then
 	rm -rf /usr/share/doc/*
 fi
 
-echo "==> Removing caches"
-find /var/cache -type f -exec rm -rf {} \;
-# delete any logs that have built up during the install
-find /var/log/ -name *.log -exec rm -f {} \;
-
 echo "==> Disk usage after cleanup"
 df -h

@@ -27,6 +27,15 @@ echo "pre-up sleep 2" >> /etc/network/interfaces
 echo "==> Cleaning up tmp"
 rm -rf /tmp/*
 
+echo "==> Removing caches"
+find /var/cache -type f -delete
+rm -rf /root/.cache/*
+# delete any logs that have built up during the install
+find /var/log/ -name *.log -delete
+
+
+
+
 # Cleanup apt cache
 apt-get -y autoremove --purge
 apt-get -y clean

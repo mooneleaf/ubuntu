@@ -17,10 +17,13 @@ fi
 if [[ $UPDATE  =~ true || $UPDATE =~ 1 || $UPDATE =~ yes ]]; then
 	echo "==> Updating list of repositories"
 	# apt-get update does not actually perform updates, it just downloads and indexes the list of packages
-	apt-get -y update
+	apt-get update --yes
 
     echo "==> Performing dist-upgrade (all packages and kernel)"
-    apt-get -y dist-upgrade --force-yes
-    reboot
-    sleep 60
+	apt-get dist-upgrade --yes --allow-change-held-packages
+
+	apt-get install --fix-broken --yes
+
+	printf "==> %s" "Rebooting"
+	nohup shutdown --reboot now </dev/null >/dev/null 2>&1 &
 fi
